@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
 from django.utils.functional import SimpleLazyObject
 
@@ -20,37 +21,29 @@ class ApiKeyAuthenticationMiddleware:
         return response
 
     def _get_header(self):
-        return getattr(settings, "USER_API_KEY_CUSTOM_HEADER", "HTTP_AUTHORIZATION")
+        return getattr(settings, "USER_API_KEY_CUSTOM_HEADER", "Authorization")
 
     def _get_prefix(self):
-        return (
-            getattr(settings, "USER_API_KEY_CUSTOM_HEADER_PREFIX", "Api-Key").strip()
-            + " "
-        )
+        return getattr(settings, "USER_API_KEY_CUSTOM_HEADER_PREFIX", "Api-Key").strip() + " "
 
     def _handle(self, request):
-        header_val = str(request.META.get(self._get_header()))
+        header_val = str(request.headers.get(self._get_header()))
         if not header_val:
             return
 
         if not header_val.startswith(self._get_prefix()):
             return
 
-        if hasattr("user", request) and not request.user.is_anonymous:
+        if hasattr(request, "user") and not request.user.is_anonymous:
             return
 
         _, key_val = header_val.split(self._get_prefix())
 
         def get_user(r):
-            api_key = (
-                UserApiKey.objects.filter(revoked_at__is_null=True)
-                .with_api_key(key_val)
-                .selected_related("user")
-                .first()
-            )
+            api_key = UserApiKey.objects.valid().with_api_key(key_val).select_related("user").first()
 
             if not api_key:
-                return
+                return AnonymousUser()
 
             api_key.last_used_at = timezone.now()
             api_key.save()
