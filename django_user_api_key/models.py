@@ -6,6 +6,7 @@ from typing import Tuple
 from django.conf import settings
 from django.db import models
 from django.db.models import QuerySet
+from django.utils import timezone
 from django.utils.encoding import force_bytes
 
 
@@ -45,12 +46,14 @@ class UserApiKeyManager(models.Manager):
     def with_api_key(self, api_key: str) -> QuerySet:
         return self.get_queryset().with_api_key(api_key)
 
-    def create_key(self, user) -> Tuple["UserApiKey", uuid.UUID]:
+    def create_key(self, user, name: str, description: str = None, commit: bool = True) -> Tuple["UserApiKey", uuid.UUID]:
         key_val = uuid.uuid4()
         hashed_val = _hash_value(key_val)
 
-        key = UserApiKey(user=user, api_key=hashed_val)
-        key.save(using=self._db)
+        key = UserApiKey(user=user, api_key=hashed_val, name=name, description=description or "")
+
+        if commit:
+            key.save()
 
         return key, key_val
 
@@ -65,3 +68,9 @@ class UserApiKey(models.Model):
     last_used_at = models.DateTimeField(null=True)
 
     objects = UserApiKeyManager()
+
+    class Meta:
+        unique_together = ["user", "name"]
+
+    def revoke(self):
+        self.revoked_at = timezone.now()
