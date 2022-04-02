@@ -1,0 +1,41 @@
+{% load i18n %}
+
+<h4>API Keys</h4>
+
+<div>
+    <a href="{% url 'create_key' %}">New Key</a>
+</div>
+
+<div id="api-keys-list">
+    {% for api_key in object_list %}
+        <div>
+            <div>{% trans "Name" %}: {{  api_key.name }}</div>
+            <div>{% trans "Description" %}: {{ api_key.description }}</div>
+            <div>{%  trans "Last Used At" %}: {{ api_key.last_used_at|date }}</div>
+            <div>{% trans "Revoked At" %}: {{ api_key.revoked_at|date }}</div>
+            {% if not api_key.revoked_at %}
+                <div><a href="{% url 'delete_key' api_key.id %}">Revoke</a></div>
+            {% endif %}
+        </div>
+    {% empty %}
+        <div>{% trans "Not API keys yet." %}</div>
+    {% endfor %}
+</div>
+
+<div id="api-keys-pagination">
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; {% trans "First" %}</a>
+            <a href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a>
+        {% endif %}
+    </div>
+</div>

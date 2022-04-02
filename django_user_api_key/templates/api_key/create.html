@@ -1,0 +1,34 @@
+{% load i18n %}
+
+<h4 class="title">{% trans "Create Key" %}</h4>
+
+{% if created_key_value %}
+  <div>
+    {% trans "API key created. This value will only be shown once, so be sure to save it somewhere secure." %}
+  </div>
+  <div>{{ created_key_value }}</div>
+{% endif %}
+
+<form id="create-api-key-form" method="POST" action="{% url 'create_key' %}">
+  {% csrf_token %}
+  <div id="name-group">
+      <label id="name-label" for="name-field">{% trans "Name" %}</label>
+      <input type="text" name="name" id="name-field" value="{{ form.name.value|default_if_none:'' }}" placeholder="{% trans 'Name' %}">
+  </div>
+  <div id="name-errors">
+    {% for error in form.name.errors %}
+      <div id="name-error">{{ error }}</div>
+    {% endfor %}
+  </div>
+  <div id="description-group">
+    <label id="description-label" for="description-field">{% trans "Description" %}</label>
+    <textarea name="description" id="description-field" placeholder="{% trans 'Description' %}">{{ form.description.value|default_if_none:"" }}</textarea>
+  </div>
+  <div id="description-errors">
+    {% for error in form.description.errors %}
+      <div id="description-error">{{ error }}</div>
+    {% endfor %}
+  </div>
+
+  <input id="create-api-key-form-submit" type="submit" value="Submit">
+</form>
