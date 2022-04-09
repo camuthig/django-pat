@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "django_user_api_key",
     "example_project",
 ]
@@ -130,3 +131,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 USER_API_KEY_SECRET = "not-a-secure-key"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "django_user_api_key.rest_framework.auth.UserApiKeyAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+}

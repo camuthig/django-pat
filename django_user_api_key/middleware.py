@@ -1,8 +1,8 @@
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.utils import timezone
+from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 
+from django_user_api_key.http import parse_header
 from django_user_api_key.models import UserApiKey
 
 
@@ -11,44 +11,30 @@ class ApiKeyAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        self._handle(request)
+        self.handle(request)
 
         response = self.get_response(request)
 
-        # OAuth2 middleware also does the below for reasons that may be worth considering.
-        # patch_vary_headers(response, ("Authorization",))
-
         return response
 
-    def _get_header(self):
-        return getattr(settings, "USER_API_KEY_CUSTOM_HEADER", "Authorization")
+    def handle(self, request: HttpRequest):
+        key_value = parse_header(request)
 
-    def _get_prefix(self):
-        return getattr(settings, "USER_API_KEY_CUSTOM_HEADER_PREFIX", "Api-Key").strip() + " "
-
-    def _handle(self, request):
-        header_val = str(request.headers.get(self._get_header()))
-        if not header_val:
+        if key_value is None:
             return
 
-        if not header_val.startswith(self._get_prefix()):
-            return
+        # TODO Explore a better way to handle typing here.
+        request.user = SimpleLazyObject(lambda: self.get_user(request, key_value))  # type: ignore
 
-        if hasattr(request, "user") and not request.user.is_anonymous:
-            return
+    def get_user(self, request: HttpRequest, key_value: str):
+        # See: https://github.com/typeddjango/django-stubs/issues/728
+        api_key = UserApiKey.objects.select_related("user").first_valid_key(key_value)  # type: ignore
 
-        _, key_val = header_val.split(self._get_prefix())
+        if not api_key:
+            return AnonymousUser()
 
-        def get_user(r):
-            api_key = UserApiKey.objects.valid().with_api_key(key_val).select_related("user").first()
+        api_key.mark_used()
 
-            if not api_key:
-                return AnonymousUser()
-
-            api_key.last_used_at = timezone.now()
-            api_key.save()
-
-            r._cached_user = api_key.user
-            return r._cached_user
-
-        request.user = SimpleLazyObject(lambda: get_user(request))
+        # TODO Explore better typing and if _cached_user is worthwhile
+        request._cached_user = api_key.user  # type: ignore
+        return request._cached_user  # type: ignore

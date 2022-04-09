@@ -36,7 +36,6 @@ class UserApiKeyAdmin(admin.ModelAdmin):
 
     def delete_model(self, request, obj: UserApiKey) -> None:
         obj.revoke()
-        obj.save()
 
     def has_change_permission(self, request, obj=None) -> bool:
         return False

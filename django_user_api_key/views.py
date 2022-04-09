@@ -54,6 +54,5 @@ class DeleteKeyView(LoginRequiredMixin, DeleteView):
         success_url = self.get_success_url()
 
         self.object.revoke()
-        self.object.save()
 
         return HttpResponseRedirect(success_url)

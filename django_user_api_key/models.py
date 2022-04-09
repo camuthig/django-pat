@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import uuid
+from typing import Optional
 from typing import Tuple
 
 from django.conf import settings
@@ -35,6 +36,12 @@ class UserApiKeyQuerySet(QuerySet):
     def with_api_key(self, api_key: str):
         return self.filter(api_key=_hash_value(api_key))
 
+    def with_valid_key(self, api_key: str):
+        return self.valid().with_api_key(api_key)
+
+    def first_valid_key(self, api_key: str) -> Optional["UserApiKey"]:
+        return self.with_valid_key(api_key).first()
+
 
 class UserApiKeyManager(models.Manager):
     def get_queryset(self):
@@ -43,8 +50,11 @@ class UserApiKeyManager(models.Manager):
     def valid(self):
         return self.get_queryset().valid()
 
-    def with_api_key(self, api_key: str) -> QuerySet:
+    def with_api_key(self, api_key: str):
         return self.get_queryset().with_api_key(api_key)
+
+    def first_valid_key(self, api_key: str) -> Optional["UserApiKey"]:
+        return self.get_queryset().with_valid_key(api_key).first()
 
     def create_key(self, user, name: str, description: str = None, commit: bool = True) -> Tuple["UserApiKey", uuid.UUID]:
         key_val = uuid.uuid4()
@@ -72,5 +82,12 @@ class UserApiKey(models.Model):
     class Meta:
         unique_together = ["user", "name"]
 
-    def revoke(self):
+    def revoke(self, commit=True):
         self.revoked_at = timezone.now()
+        if commit:
+            self.save()
+
+    def mark_used(self, commit=True):
+        self.last_used_at = timezone.now()
+        if commit:
+            self.save()

@@ -5,7 +5,6 @@ from django.test import RequestFactory
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import timezone
-from django.utils.functional import SimpleLazyObject
 
 from django_user_api_key.middleware import ApiKeyAuthenticationMiddleware
 from django_user_api_key.models import UserApiKey
@@ -27,19 +26,6 @@ class TestApiKeyAuthenticationMiddleware(TestCase):
 
         m = ApiKeyAuthenticationMiddleware(handle)
         req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {key_val}")
-        m(req)
-
-    def test_it_defers_to_existing_auth_if_set(self):
-        already_authenticated_user = User.objects.create_user("user1", "user1@test.com", "random-insecure-text")
-        user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
-
-        def handle(request):
-            self.assertEqual(already_authenticated_user, request.user)
-
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {key_val}")
-        req.user = SimpleLazyObject(lambda: already_authenticated_user)
         m(req)
 
     @override_settings(USER_API_KEY_CUSTOM_HEADER="X-Custom-Key")
