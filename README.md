@@ -11,6 +11,8 @@ to ensure they are secure. This application accomplishes this security by:
 
 ## Usage
 
+### Standard Django
+
 1. Install the package: `pip install git+https://github.com/camuthig/django-user-api-key.git@master` (not yet available on pypi)
 2. Add `django_user_api_key` to the `INSTALLED_APPS` of your project
 3. Add the middleware to your middleware stack
@@ -24,6 +26,42 @@ to ensure they are secure. This application accomplishes this security by:
 4. Create a key and add it to your settings file as `USER_API_KEY_SECRET`
 5. Create a key for yourself using the Django Admin
 6. Send an API request with the setting the authorization header as `Authorization: Api-Key xyz`
+
+### REST Framework
+
+1. Install the package: `pip install git+https://github.com/camuthig/django-user-api-key.git@master` (not yet available on pypi)
+2. Add `django_user_api_key` to the `INSTALLED_APPS` of your project
+3. Add the authentication class to your DRF default authentication classes
+   ```python
+   REST_FRAMEWORK = {
+       "DEFAULT_AUTHENTICATION_CLASSES": [
+           "django_user_api_key.rest_framework.auth.UserApiKeyAuthentication",
+           "rest_framework.authentication.SessionAuthentication",
+       ],
+   }
+   ```
+4. Create a key and add it to your settings file as `USER_API_KEY_SECRET`
+5. Create a key for yourself using the Django Admin
+6. Send an API request with the setting the authorization header as `Authorization: Api-Key xyz`
+
+**Optional: Add API Key Views**
+
+APIs can be added to your Django application to create, retrieve, and revoke keys out of the box.
+
+```python
+# urls.py
+from django.urls import include
+from django.urls import path
+
+from django_user_api_key.rest_framework.urls import router as api_key_router
+
+urlpatterns = [
+    # other routes...
+
+    path("api/", include(api_key_router.urls)),
+]
+```
+
 
 ## Implementation Details
 
