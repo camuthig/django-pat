@@ -1,0 +1,15 @@
+#! /bin/sh
+
+dirs="django_user_api_key tests example_project"
+
+echo "Run mypy..."
+poetry run mypy $dirs
+
+echo "Run flake8..."
+poetry run flake8 $dirs
+
+echo "Run isort..."
+poetry run isort --check-only --diff --force-single-line-imports --profile black $dirs
+
+echo "Run black..."
+poetry run black --check --diff $dirs
