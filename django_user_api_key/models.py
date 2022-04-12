@@ -91,3 +91,6 @@ class UserApiKey(models.Model):
         self.last_used_at = timezone.now()
         if commit:
             self.save()
+
+    def __str__(self):
+        return self.name
