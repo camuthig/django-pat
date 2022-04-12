@@ -1,37 +1,49 @@
 # Django User API Keys
 
+This application creates API keys/tokens that clients can send via HTTP headers to authenticate as a particular user.
+This application expands on the standard functionality provided in REST Framework tokens by allowing users to create
+more than one token and cycle/revoke tokens for security purposes.
+
 API Keys allow clients to pass a secure value to an API without having to first exchange a username and password. This
-makes interactions between machines straight forward and consistent. While these keys are easy to use, it is important
+makes interactions between machines straightforward and consistent. While these keys are easy to use, it is important
 to ensure they are secure. This application accomplishes this security by:
 
-1. Hashing all key values after creation. This means admins of the application and malicious actors should never be able
-   to access key values in plain text.
-2. Allowing for keys to be "cycled". This can be accomplished by revoking current keys and creating new ones. Clients
-   can choose to do this on a regular basis or as needed, if they believe a key has been compromised.
+1. Hashing all key values after creation. This ensures admins of the application and malicious actors are never be able
+   to access key values in plain text via a data breach.
+2. Allowing for keys to be "cycled". This is accomplished by revoking existing keys and creating new ones. Clients
+   can do this easily via APIs on a regular basis or as needed, if they believe a key has been compromised.
 
 ## Usage
 
-### Standard Django
+By default, both the standard middleware and the REST Framework authentication will look for the API key in the
+`Authorization` HTTP header with a prefix of `Api-Key`. So this might look like
 
+```
+Authorization: Api-Key 41ecea63-66eb-4e6a-bffd-e85cd29718ab
+```
+
+### Initial Setup
 1. Install the package: `pip install git+https://github.com/camuthig/django-user-api-key.git@master` (not yet available on pypi)
 2. Add `django_user_api_key` to the `INSTALLED_APPS` of your project
-3. Add the middleware to your middleware stack
+3. Add the `USER_API_KEY_SECRET` value to your settings file to hash secrets. This value should be kept secret!
+    ```python
+    USER_API_KEY_SECRET = "super-secret-hashing-key"
+    ```
+
+
+### Django Middleware
+
+1. Add the middleware to your middleware stack
    ```python
    MIDDLEWARE = [
        "django.contrib.auth.middleware.AuthenticationMiddleware",
-        # Putting this after the standard session authentication will defer to the session if it defines a user.
        "django_user_api_key.middleware.ApiKeyAuthenticationMiddleware",
    ]
    ```
-4. Create a key and add it to your settings file as `USER_API_KEY_SECRET`
-5. Create a key for yourself using the Django Admin
-6. Send an API request with the setting the authorization header as `Authorization: Api-Key xyz`
 
 ### REST Framework
 
-1. Install the package: `pip install git+https://github.com/camuthig/django-user-api-key.git@master` (not yet available on pypi)
-2. Add `django_user_api_key` to the `INSTALLED_APPS` of your project
-3. Add the authentication class to your DRF default authentication classes
+1. Add the authentication class to your DRF default authentication classes
    ```python
    REST_FRAMEWORK = {
        "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -40,9 +52,6 @@ to ensure they are secure. This application accomplishes this security by:
        ],
    }
    ```
-4. Create a key and add it to your settings file as `USER_API_KEY_SECRET`
-5. Create a key for yourself using the Django Admin
-6. Send an API request with the setting the authorization header as `Authorization: Api-Key xyz`
 
 **Optional: Add API Key Views**
 
@@ -62,6 +71,14 @@ urlpatterns = [
 ]
 ```
 
+## Configuration
+
+Along with the `USER_API_KEY_SECRET` value that is required, you can also configure the header and prefix that the
+middleware and REST Framework authentication use for finding and validating the key.
+
+* `USER_API_KEY_CUSTOM_HEADER` - Sets the HTTP header to check for the key. This defaults to `Authorization`
+* `USER_API_KEY_CUSTOM_HEADER_PREFIX` - Sets the prefix for the header value. This defaults to `Api-Key`. The middleware
+    and the REST authentication expect a space between the prefix and the key value.
 
 ## Implementation Details
 
@@ -95,5 +112,12 @@ forcing all possible UUID4 values is unlikely, but rate limiting provides anothe
     [Issue 173](https://github.com/florimondmanca/djangorestframework-api-key/issues/173)
   * The primary key pattern of the Django REST Framework API Key records use special characters, making them difficult
     to encode for browsers. See: [Issue 128](https://github.com/florimondmanca/djangorestframework-api-key/issues/128)
+* [Django REST Framework TokenAuthentication](https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication)
+  The standard DRF `TokenAuthentication` model has a couple of drawbacks that this project attempts to avoid by
+  expanding on the pattern. In the standard token pattern:
+  * The token value is stored in a plain-text format
+  * The token value acts as the primary key of the token. If building an API to retrieve the token, you would not
+    want to use this key in a URL, as it would go over the network in plain-text.
+  * Each user can only have a single token.
+  * Revoking one user's token opens up the possibility of generating the same token again for a different user.
 * Django OAuth Toolkit - WIP
-* Django REST Framework TokenAuthentication - WIP
