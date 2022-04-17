@@ -2,7 +2,7 @@ import nox
 
 
 # TODO 3.10 currently causes errors on build. Support will be added later.
-@nox.session(python=["3.6", "3.7", "3.8", "3.9"])
+@nox.session(python=["3.7", "3.8", "3.9", "3.10"])
 def tests(session):
     session.run("poetry", "install", external=True)
     session.run("pytest")
@@ -11,13 +11,13 @@ def tests(session):
 lint_dirs = ["django_user_api_key", "tests", "example_project"]
 
 
-@nox.session(python=["3.6"])
+@nox.session(python=["3.7"])
 def types(session):
     session.run("poetry", "install", external=True)
     session.run("mypy", ".", external=True)
 
 
-@nox.session(python=["3.6"])
+@nox.session(python=["3.7"])
 def formatting(session):
     session.run("poetry", "install", external=True)
     session.run("flake8", *lint_dirs)
