@@ -25,7 +25,7 @@ jobs:
          restore-keys: |
            ${{ matrix.os }}-${{ matrix.python-version }}-nox-
      - name: Run tests
-       run: nox -s tests --python ${{ matrix.python-version }}
+       run: nox -s tests --python ${{ matrix.python-version }} --reuse-existing-virtualenvs
      - uses: codecov/codecov-action@v2
        with:
          name: test-py${{ matrix.python-version }}-${{ matrix.os }}
@@ -51,4 +51,4 @@ jobs:
           key: ${{ runner.os }}-${{ runner.python-version }}-nox-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.python-version }}-nox-
-      - run: nox -s ${{ matrix.check }}
+      - run: nox -s ${{ matrix.check }} --reuse-existing-virtualenvs
