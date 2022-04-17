@@ -26,8 +26,6 @@ jobs:
            ${{ matrix.os }}-${{ matrix.python-version }}-nox-
      - name: Run tests
        run: nox -s tests --python ${{ matrix.python-version }}
-     - name: Generate coverage
-       run: poetry run coverage xml
      - uses: codecov/codecov-action@v2
        with:
          name: test-py${{ matrix.python-version }}-${{ matrix.os }}
