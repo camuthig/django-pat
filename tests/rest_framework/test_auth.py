@@ -71,9 +71,9 @@ class TestUserApiKeyAuthentication(TestCase):
 
     def test_it_returns_configured_keyword_for_authenticate_header(self):
         obj = UserApiKeyAuthentication()
-        self.assertEqual('Api-Key', obj.authenticate_header(self.request_factory.get("path")))
+        self.assertEqual("Api-Key", obj.authenticate_header(self.request_factory.get("path")))
 
     @override_settings(USER_API_KEY_CUSTOM_HEADER_PREFIX="Custom-Key")
     def test_it_returns_custom_keyword_for_authenticate_header(self):
         obj = UserApiKeyAuthentication()
-        self.assertEqual('Custom-Key', obj.authenticate_header(self.request_factory.get("path")))
+        self.assertEqual("Custom-Key", obj.authenticate_header(self.request_factory.get("path")))

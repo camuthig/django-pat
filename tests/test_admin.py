@@ -1,12 +1,12 @@
 from django.contrib.admin import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
-from django.test import TestCase
 from django.test import RequestFactory
+from django.test import TestCase
 
-from django_user_api_key.admin import UserApiKeyAdmin, UserApiKeyForm
+from django_user_api_key.admin import UserApiKeyAdmin
+from django_user_api_key.admin import UserApiKeyForm
 from django_user_api_key.models import UserApiKey
-
 
 User = get_user_model()
 
@@ -49,9 +49,9 @@ class UserApiKeyAdminTest(TestCase):
     def test_it_flashes_the_key_value_on_save(self):
         request = self.request_factory.post("path", {"name": "Test key", "description": ""})
         request.user = self.user
-        setattr(request, 'session', 'session')
+        setattr(request, "session", "session")
         messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
+        setattr(request, "_messages", messages)
 
         ma = UserApiKeyAdmin(UserApiKey, self.site)
         obj, val = UserApiKey.objects.create_key(self.user, "Test Key", "", False)
