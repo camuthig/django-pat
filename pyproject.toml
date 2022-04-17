@@ -26,6 +26,8 @@ django-stubs = "^1.10"
 djangorestframework-stubs = "1.5"
 nox = "^2022.1"
 isort = "^5.10"
+coverage = {extras = ["toml"], version = "^6.3.2"}
+pytest-cov = "^3.0.0"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"
@@ -41,6 +43,17 @@ exclude = [
 
 [tool.django-stubs]
 django_settings_module = "tests.settings"
+
+[tool.coverage.paths]
+source = ["django_user_api_key"]
+
+[tool.coverage.run]
+branch = true
+#source = ["django_user_api_key"]
+
+[tool.coverage.report]
+show_missing = true
+omit = ["tests/*", "**/migrations/*", "**/__init__.py"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

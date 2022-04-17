@@ -29,6 +29,12 @@ class TestUserApiKeyAuthentication(TestCase):
         obj = UserApiKeyAuthentication()
         self.assertRaises(AuthenticationFailed, obj.authenticate, req)
 
+    def test_it_returns_none_if_header_not_present(self):
+        req = self.request_factory.get("path")
+        obj = UserApiKeyAuthentication()
+        res = obj.authenticate(req)
+        self.assertIsNone(res)
+
     @override_settings(USER_API_KEY_CUSTOM_HEADER="X-Custom-Header")
     def test_it_uses_custom_header(self):
         req = self.request_factory.get("path", HTTP_X_CUSTOM_HEADER=f"Api-Key {self.key_val}")
@@ -54,3 +60,20 @@ class TestUserApiKeyAuthentication(TestCase):
         req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Custom-Key {self.key_val}")
         obj = UserApiKeyAuthentication()
         self.assertRaises(AuthenticationFailed, obj.authenticate, req)
+
+    def test_it_fails_if_user_is_not_active(self):
+        self.user.is_active = False
+        self.user.save()
+
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {self.key_val}")
+        obj = UserApiKeyAuthentication()
+        self.assertRaises(AuthenticationFailed, obj.authenticate, req)
+
+    def test_it_returns_configured_keyword_for_authenticate_header(self):
+        obj = UserApiKeyAuthentication()
+        self.assertEqual("Api-Key", obj.authenticate_header(self.request_factory.get("path")))
+
+    @override_settings(USER_API_KEY_CUSTOM_HEADER_PREFIX="Custom-Key")
+    def test_it_returns_custom_keyword_for_authenticate_header(self):
+        obj = UserApiKeyAuthentication()
+        self.assertEqual("Custom-Key", obj.authenticate_header(self.request_factory.get("path")))

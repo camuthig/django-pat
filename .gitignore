@@ -3,3 +3,5 @@ __pycache__
 .vscode
 poetry.lock
 db.sqlite3
+.coverage
+coverage.xml
