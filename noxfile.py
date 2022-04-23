@@ -17,7 +17,7 @@ def tests(session, django):
     session.run("pytest", "--cov", "--cov-report=xml")
 
 
-lint_dirs = ["django_user_api_key", "tests", "example_project"]
+lint_dirs = ["src", "tests", "example_project"]
 
 
 @nox.session(python=["3.7"])
