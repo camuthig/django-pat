@@ -56,7 +56,9 @@ class PersonalAccessTokenManager(models.Manager):
     def first_valid_token(self, value: str) -> Optional["PersonalAccessToken"]:
         return self.get_queryset().with_valid_value(value).first()
 
-    def create_token(self, user, name: str, description: str = None, commit: bool = True) -> Tuple["PersonalAccessToken", uuid.UUID]:
+    def create_token(
+        self, user, name: str, description: str = None, commit: bool = True
+    ) -> Tuple["PersonalAccessToken", uuid.UUID]:
         token_val = uuid.uuid4()
         hashed_val = _hash_value(token_val)
 

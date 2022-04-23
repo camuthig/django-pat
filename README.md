@@ -9,7 +9,7 @@ This application expands on the standard functionality provided in REST Framewor
 more than one token and cycle/revoke tokens for security purposes.
 
 Personal access tokens are API keys that allow clients to pass a secure value to an API without having to first exchange
-a username and password. This  makes interactions between machines straightforward and consistent. While these tokens are 
+a username and password. This  makes interactions between machines straightforward and consistent. While these tokens are
 easy to use, it is important to ensure they are secure. This application accomplishes this security by:
 
 1. Hashing all token values after creation. This ensures admins of the application and malicious actors are never be able
