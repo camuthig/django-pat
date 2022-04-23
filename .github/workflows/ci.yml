@@ -23,7 +23,7 @@ jobs:
          poetry-version: 1.1.13
      - uses: actions/cache@v3
        with:
-         path: ~/.nox
+         path: .nox
          key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.django-version }}-nox-${{ hashFiles('**/pyproject.toml') }}
          restore-keys: |
            ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.django-version }}-nox-
@@ -50,7 +50,7 @@ jobs:
           poetry-version: 1.1.13
       - uses: actions/cache@v3
         with:
-          path: ~/.nox
+          path: .nox
           key: ${{ runner.os }}-${{ runner.python-version }}-nox-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.python-version }}-nox-
