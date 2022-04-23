@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "A Django package for creating, using, and managing user controlled API keys."
 authors = ["Chris Muthig <camuthig@gmail.com>"]
 license = "MIT"
+packages = [
+    { include = "django_user_api_key", from = "src" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -33,6 +36,7 @@ coverage = {extras = ["toml"], version = "^6.3.2"}
 pytest-cov = "^3.0.0"
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 
 [tool.black]
@@ -48,7 +52,7 @@ exclude = [
 django_settings_module = "tests.settings"
 
 [tool.coverage.paths]
-source = ["django_user_api_key"]
+source = ["src/django_user_api_key"]
 
 [tool.coverage.run]
 branch = true
