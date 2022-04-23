@@ -16,10 +16,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="UserApiKey",
+            name="PersonalAccessToken",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("api_key", models.CharField(db_index=True, editable=False, max_length=64)),
+                ("hashed_value", models.CharField(db_index=True, editable=False, max_length=64)),
                 ("name", models.CharField(max_length=255)),
                 ("description", models.TextField(blank=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),

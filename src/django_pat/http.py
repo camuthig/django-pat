@@ -8,11 +8,11 @@ class ParseException(Exception):
 
 
 def get_header():
-    return getattr(settings, "USER_API_KEY_CUSTOM_HEADER", "Authorization")
+    return getattr(settings, "PAT_CUSTOM_HEADER", "Authorization")
 
 
 def get_keyword():
-    return getattr(settings, "USER_API_KEY_CUSTOM_HEADER_PREFIX", "Api-Key").strip()
+    return getattr(settings, "PAT_CUSTOM_HEADER_PREFIX", "Access-Token").strip()
 
 
 def parse_header(request):
@@ -28,6 +28,6 @@ def parse_header(request):
     if not header_val.startswith(get_keyword() + " "):
         raise ParseException(gettext("Invalid header"))
 
-    _, key_val = header_val.split(get_keyword() + " ")
+    _, token_val = header_val.split(get_keyword() + " ")
 
-    return key_val
+    return token_val

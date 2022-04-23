@@ -3,38 +3,38 @@ from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth.base_user import AbstractBaseUser
 
-from django_user_api_key.models import UserApiKey
+from django_pat.models import PersonalAccessToken
 
 
-class UserApiKeyForm(forms.ModelForm):
+class PersonalAccessTokenForm(forms.ModelForm):
     current_user: AbstractBaseUser
 
     class Meta:
-        model = UserApiKey
+        model = PersonalAccessToken
         fields = ["name", "description"]
 
     def save(self, commit=True):
-        api_key, value = UserApiKey.objects.create_key(
+        token, value = PersonalAccessToken.objects.create_token(
             self.current_user,
             self.cleaned_data["name"],
             self.cleaned_data["description"],
             commit=commit,
         )
-        api_key.plain_text_key = value
+        token.plain_text_value = value
 
-        return api_key
+        return token
 
     def save_m2m(self):
         pass
 
 
-class UserApiKeyAdmin(admin.ModelAdmin):
-    form = UserApiKeyForm
+class PersonalAccessTokenAdmin(admin.ModelAdmin):
+    form = PersonalAccessTokenForm
     list_display = ["user", "name", "last_used_at", "revoked_at"]
     fields = ["user", "name", "description", "last_used_at", "revoked_at"]
     readonly_fields = ["user", "last_used_at", "revoked_at"]
 
-    def delete_model(self, request, obj: UserApiKey) -> None:
+    def delete_model(self, request, obj: PersonalAccessToken) -> None:
         obj.revoke()
 
     def has_change_permission(self, request, obj=None) -> bool:
@@ -50,7 +50,7 @@ class UserApiKeyAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        messages.success(request, f"API Key value {obj.plain_text_key}")
+        messages.success(request, f"Personal access token value {obj.plain_text_value}")
 
 
-admin.site.register(UserApiKey, UserApiKeyAdmin)
+admin.site.register(PersonalAccessToken, PersonalAccessTokenAdmin)

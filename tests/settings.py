@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_user_api_key",
+    "django_pat",
 ]
 
 MIDDLEWARE = [
@@ -28,7 +28,7 @@ MIDDLEWARE = [
     # Middleware added after standard session middleware. Session auth
     # will take precedence.
     # ----------------------------------------------------------------------
-    "django_user_api_key.middleware.ApiKeyAuthenticationMiddleware",
+    "django_pat.middleware.PatAuthenticationMiddleware",
     # ----------------------------------------------------------------------
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -62,4 +62,4 @@ DATABASES = {
     },
 }
 
-USER_API_KEY_SECRET = "not_a_secret_key_at_all"
+PAT_SECRET = "not_a_secret_key_at_all"

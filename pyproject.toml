@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "django_user_api_key"
+name = "django_pat"
 version = "0.1.0"
-description = "A Django package for creating, using, and managing user controlled API keys."
+description = "A Django package for creating, using, and managing personal access tokens."
 authors = ["Chris Muthig <camuthig@gmail.com>"]
 license = "MIT"
 packages = [
-    { include = "django_user_api_key", from = "src" },
+    { include = "django_pat", from = "src" },
 ]
 
 [tool.poetry.dependencies]
@@ -52,7 +52,7 @@ exclude = [
 django_settings_module = "tests.settings"
 
 [tool.coverage.paths]
-source = ["src/django_user_api_key"]
+source = ["src/django_pat"]
 
 [tool.coverage.run]
 branch = true

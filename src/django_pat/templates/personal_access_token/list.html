@@ -1,28 +1,28 @@
 {% load i18n %}
 
-<h4>API Keys</h4>
+<h4>Personal Access Tokens</h4>
 
 <div>
-    <a href="{% url 'create_key' %}">New Key</a>
+    <a href="{% url 'create_token' %}">New Personal Access Token</a>
 </div>
 
-<div id="api-keys-list">
-    {% for api_key in object_list %}
+<div id="tokens-list">
+    {% for token in object_list %}
         <div>
-            <div>{% trans "Name" %}: {{  api_key.name }}</div>
-            <div>{% trans "Description" %}: {{ api_key.description }}</div>
-            <div>{%  trans "Last Used At" %}: {{ api_key.last_used_at|date }}</div>
-            <div>{% trans "Revoked At" %}: {{ api_key.revoked_at|date }}</div>
-            {% if not api_key.revoked_at %}
-                <div><a href="{% url 'delete_key' api_key.id %}">Revoke</a></div>
+            <div>{% trans "Name" %}: {{  token.name }}</div>
+            <div>{% trans "Description" %}: {{ token.description }}</div>
+            <div>{%  trans "Last Used At" %}: {{ token.last_used_at|date }}</div>
+            <div>{% trans "Revoked At" %}: {{ token.revoked_at|date }}</div>
+            {% if not token.revoked_at %}
+                <div><a href="{% url 'delete_token' token.id %}">Revoke</a></div>
             {% endif %}
         </div>
     {% empty %}
-        <div>{% trans "Not API keys yet." %}</div>
+        <div>{% trans "Not tokens yet." %}</div>
     {% endfor %}
 </div>
 
-<div id="api-keys-pagination">
+<div id="tokens-pagination">
     <div>
         {% if page_obj.has_previous %}
             <a href="?page=1">&laquo; {% trans "First" %}</a>

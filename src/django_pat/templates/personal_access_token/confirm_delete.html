@@ -1,5 +1,5 @@
 <form method="POST">
     {% csrf_token %}
-    <div>Are you sure you want to revoke the key named "{{ object.name }}"?</div>
+    <div>Are you sure you want to revoke the token named "{{ object.name }}"?</div>
     <input type="submit" value="Confirm">
 </form>

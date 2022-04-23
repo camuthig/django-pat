@@ -17,12 +17,12 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-from django_user_api_key.rest_framework.urls import router
+from django_pat.rest_framework.urls import router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("api/", include("rest_framework.urls")),
     path("api/", include(router.urls)),
-    path("", include("django_user_api_key.urls")),
+    path("", include("django_pat.urls")),
 ]
