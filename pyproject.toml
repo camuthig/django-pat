@@ -49,7 +49,6 @@ source = ["django_user_api_key"]
 
 [tool.coverage.run]
 branch = true
-#source = ["django_user_api_key"]
 
 [tool.coverage.report]
 show_missing = true
