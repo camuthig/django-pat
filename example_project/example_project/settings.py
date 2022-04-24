@@ -49,7 +49,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_pat.middleware.ApiKeyAuthenticationMiddleware",
+    "django_pat.middleware.PatAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -134,7 +134,7 @@ PAT_SECRET = "not-a-secure-key"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "django_pat.rest_framework.auth.UserApiKeyAuthentication",
+        "django_pat.rest_framework.auth.PatAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ]
 }
