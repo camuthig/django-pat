@@ -16,7 +16,7 @@ class TestPatAuthenticationMiddleware(TestCase):
     def setUp(self):
         self.request_factory = RequestFactory()
 
-    def test_it_parses_default_key(self):
+    def test_it_parses_default_header(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
         token, token_val = PersonalAccessToken.objects.create_token(user, "name")
 
@@ -73,7 +73,7 @@ class TestPatAuthenticationMiddleware(TestCase):
         req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
         m(req)
 
-    def test_it_does_not_use_revoked_keys(self):
+    def test_it_does_not_use_revoked_tokens(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
         token, token_val = PersonalAccessToken.objects.create_token(user, "name")
         token.revoked_at = timezone.now()

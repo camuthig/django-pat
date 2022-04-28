@@ -10,7 +10,7 @@ class TestHeaderParsing(SimpleTestCase):
     def setUp(self):
         self.request_factory = RequestFactory()
 
-    def test_it_returns_the_key_value(self):
+    def test_it_returns_the_token_value(self):
         req = self.request_factory.get("path", HTTP_AUTHORIZATION="Access-Token 1234")
         parsed_value = parse_header(req)
         self.assertEqual("1234", parsed_value)

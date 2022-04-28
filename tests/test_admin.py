@@ -21,7 +21,7 @@ class PersonalAccessTokenFormTest(TestCase):
         self.user = User.objects.create_superuser("testuser", "test@test.com", "random-insecure-text")
         self.request_factory = RequestFactory()
 
-    def test_it_creates_a_new_key(self):
+    def test_it_creates_a_new_token(self):
         form = PersonalAccessTokenForm(data={"name": "Test Key", "description": ""})
         form.current_user = self.user
 
@@ -46,7 +46,7 @@ class PersonalAccessTokenAdminTest(TestCase):
         ma.get_form(self.request)
         ma.current_user = self.user
 
-    def test_it_flashes_the_key_value_on_save(self):
+    def test_it_flashes_the_token_value_on_save(self):
         request = self.request_factory.post("path", {"name": "Test key", "description": ""})
         request.user = self.user
         setattr(request, "session", "session")
@@ -61,18 +61,18 @@ class PersonalAccessTokenAdminTest(TestCase):
         message = list(messages).pop()
         self.assertEqual(f"Personal access token value {val}", str(message))
 
-    def test_it_revokes_keys(self):
+    def test_it_revokes_tokens(self):
         ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
         obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None)
         ma.delete_model(self.request, obj)
         self.assertIsNotNone(obj.revoked_at)
 
-    def test_it_does_not_allow_editing_keys(self):
+    def test_it_does_not_allow_editing_tokens(self):
         ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
         obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None, False)
         self.assertFalse(ma.has_change_permission(self.request, obj))
 
-    def test_it_does_not_allow_deleting_already_revoked_keys(self):
+    def test_it_does_not_allow_deleting_already_revoked_tokens(self):
         ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
         obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None, False)
         obj.revoke(False)
