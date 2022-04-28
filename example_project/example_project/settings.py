@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "django_user_api_key",
+    "django_pat",
     "example_project",
 ]
 
@@ -49,7 +49,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django_user_api_key.middleware.ApiKeyAuthenticationMiddleware",
+    "django_pat.middleware.PatAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -130,11 +130,11 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-USER_API_KEY_SECRET = "not-a-secure-key"
+PAT_SECRET = "not-a-secure-key"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "django_user_api_key.rest_framework.auth.UserApiKeyAuthentication",
+        "django_pat.rest_framework.auth.PatAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ]
 }

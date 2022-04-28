@@ -4,9 +4,9 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory
 from django.test import TestCase
 
-from django_user_api_key.admin import UserApiKeyAdmin
-from django_user_api_key.admin import UserApiKeyForm
-from django_user_api_key.models import UserApiKey
+from django_pat.admin import PersonalAccessTokenAdmin
+from django_pat.admin import PersonalAccessTokenForm
+from django_pat.models import PersonalAccessToken
 
 User = get_user_model()
 
@@ -15,24 +15,24 @@ class MockRequest:
     pass
 
 
-class UserApiKeyFormTest(TestCase):
+class PersonalAccessTokenFormTest(TestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_superuser("testuser", "test@test.com", "random-insecure-text")
         self.request_factory = RequestFactory()
 
-    def test_it_creates_a_new_key(self):
-        form = UserApiKeyForm(data={"name": "Test Key", "description": ""})
+    def test_it_creates_a_new_token(self):
+        form = PersonalAccessTokenForm(data={"name": "Test Key", "description": ""})
         form.current_user = self.user
 
         self.assertTrue(form.is_valid())
-        api_key = form.save(False)
+        token = form.save(False)
 
-        self.assertIsNotNone(api_key.plain_text_key)
-        self.assertEqual(api_key.user, self.user)
+        self.assertIsNotNone(token.plain_text_value)
+        self.assertEqual(token.user, self.user)
 
 
-class UserApiKeyAdminTest(TestCase):
+class PersonalAccessTokenAdminTest(TestCase):
     def setUp(self):
         super().setUp()
         self.user = User.objects.create_superuser("testuser", "test@test.com", "random-insecure-text")
@@ -42,38 +42,38 @@ class UserApiKeyAdminTest(TestCase):
         self.request_factory = RequestFactory()
 
     def test_it_uses_the_request_user_in_form(self):
-        ma = UserApiKeyAdmin(UserApiKey, self.site)
+        ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
         ma.get_form(self.request)
         ma.current_user = self.user
 
-    def test_it_flashes_the_key_value_on_save(self):
+    def test_it_flashes_the_token_value_on_save(self):
         request = self.request_factory.post("path", {"name": "Test key", "description": ""})
         request.user = self.user
         setattr(request, "session", "session")
         messages = FallbackStorage(request)
         setattr(request, "_messages", messages)
 
-        ma = UserApiKeyAdmin(UserApiKey, self.site)
-        obj, val = UserApiKey.objects.create_key(self.user, "Test Key", "", False)
-        obj.plain_text_key = val
+        ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
+        obj, val = PersonalAccessToken.objects.create_token(self.user, "Test Key", "", False)
+        obj.plain_text_value = val
         ma.save_model(request, obj, ma.get_form(request), False)
 
         message = list(messages).pop()
-        self.assertEqual(f"API Key value {val}", str(message))
+        self.assertEqual(f"Personal access token value {val}", str(message))
 
-    def test_it_revokes_keys(self):
-        ma = UserApiKeyAdmin(UserApiKey, self.site)
-        obj, plain = UserApiKey.objects.create_key(self.user, "Test", None)
+    def test_it_revokes_tokens(self):
+        ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
+        obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None)
         ma.delete_model(self.request, obj)
         self.assertIsNotNone(obj.revoked_at)
 
-    def test_it_does_not_allow_editing_keys(self):
-        ma = UserApiKeyAdmin(UserApiKey, self.site)
-        obj, plain = UserApiKey.objects.create_key(self.user, "Test", None, False)
+    def test_it_does_not_allow_editing_tokens(self):
+        ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
+        obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None, False)
         self.assertFalse(ma.has_change_permission(self.request, obj))
 
-    def test_it_does_not_allow_deleting_already_revoked_keys(self):
-        ma = UserApiKeyAdmin(UserApiKey, self.site)
-        obj, plain = UserApiKey.objects.create_key(self.user, "Test", None, False)
+    def test_it_does_not_allow_deleting_already_revoked_tokens(self):
+        ma = PersonalAccessTokenAdmin(PersonalAccessToken, self.site)
+        obj, plain = PersonalAccessToken.objects.create_token(self.user, "Test", None, False)
         obj.revoke(False)
         self.assertFalse(ma.has_delete_permission(self.request, obj))

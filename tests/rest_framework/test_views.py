@@ -3,20 +3,20 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from django_user_api_key.models import UserApiKey
+from django_pat.models import PersonalAccessToken
 
 User = get_user_model()
 
 
-class TestUserApiKeyViewSet(TestCase):
+class TestPersonalAccessTokenViewSet(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
         self.client.force_login(self.user)
 
-    def test_creates_a_new_key_for_the_current_user(self):
-        url = reverse("userapikey-list")
-        response = self.client.post(url, data={"name": "New Key 1"})
+    def test_creates_a_new_token_for_the_current_user(self):
+        url = reverse("personalaccesstoken-list")
+        response = self.client.post(url, data={"name": "New Token 1"})
 
         j = response.json()
         self.assertEqual(self.user.id, j["user"])
@@ -25,30 +25,30 @@ class TestUserApiKeyViewSet(TestCase):
         self.assertTrue(len(j["plain_text"]) > 0)
 
     def test_post_validates_unique_names(self):
-        UserApiKey.objects.create_key(self.user, "Existing Key")
-        url = reverse("userapikey-list")
-        response = self.client.post(url, data={"name": "Existing Key"})
+        PersonalAccessToken.objects.create_token(self.user, "Existing Token")
+        url = reverse("personalaccesstoken-list")
+        response = self.client.post(url, data={"name": "Existing Token"})
 
         self.assertEqual(400, response.status_code)
 
-    def test_list_returns_current_users_keys(self):
-        expected_key, _ = UserApiKey.objects.create_key(self.user, "Existing Key")
+    def test_list_returns_current_users_tokens(self):
+        expected_token, _ = PersonalAccessToken.objects.create_token(self.user, "Existing Token")
         other_user = User.objects.create_user("otheruser", "test@test.com", "random-insecure-text")
-        other_key, _ = UserApiKey.objects.create_key(other_user, "Other Key")
+        other_token, _ = PersonalAccessToken.objects.create_token(other_user, "Other Token")
 
-        url = reverse("userapikey-list")
+        url = reverse("personalaccesstoken-list")
         response = self.client.get(url)
 
         j = response.json()
         self.assertEqual(1, len(j))
-        self.assertEqual(expected_key.id, j[0]["id"])
+        self.assertEqual(expected_token.id, j[0]["id"])
 
     def test_delete_revokes_users_token(self):
-        api_key, _ = UserApiKey.objects.create_key(self.user, "Existing Key")
-        url = reverse("userapikey-detail", kwargs={"pk": api_key.id})
+        token, _ = PersonalAccessToken.objects.create_token(self.user, "Existing Token")
+        url = reverse("personalaccesstoken-detail", kwargs={"pk": token.id})
 
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code)
 
-        api_key.refresh_from_db()
-        self.assertIsNotNone(api_key.revoked_at)
+        token.refresh_from_db()
+        self.assertIsNotNone(token.revoked_at)

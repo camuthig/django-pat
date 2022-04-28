@@ -2,11 +2,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 
-from django_user_api_key.http import parse_header
-from django_user_api_key.models import UserApiKey
+from django_pat.http import parse_header
+from django_pat.models import PersonalAccessToken
 
 
-class ApiKeyAuthenticationMiddleware:
+class PatAuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -18,23 +18,23 @@ class ApiKeyAuthenticationMiddleware:
         return response
 
     def handle(self, request: HttpRequest):
-        key_value = parse_header(request)
+        token_value = parse_header(request)
 
-        if key_value is None:
+        if token_value is None:
             return
 
         # TODO Explore a better way to handle typing here.
-        request.user = SimpleLazyObject(lambda: self.get_user(request, key_value))  # type: ignore
+        request.user = SimpleLazyObject(lambda: self.get_user(request, token_value))  # type: ignore
 
-    def get_user(self, request: HttpRequest, key_value: str):
+    def get_user(self, request: HttpRequest, token_value: str):
         # See: https://github.com/typeddjango/django-stubs/issues/728
-        api_key = UserApiKey.objects.select_related("user").first_valid_key(key_value)  # type: ignore
+        token = PersonalAccessToken.objects.select_related("user").first_valid_token(token_value)  # type: ignore
 
-        if not api_key:
+        if not token:
             return AnonymousUser()
 
-        api_key.mark_used()
+        token.mark_used()
 
         # TODO Explore better typing and if _cached_user is worthwhile
-        request._cached_user = api_key.user  # type: ignore
+        request._cached_user = token.user  # type: ignore
         return request._cached_user  # type: ignore

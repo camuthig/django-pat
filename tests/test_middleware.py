@@ -6,82 +6,82 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import timezone
 
-from django_user_api_key.middleware import ApiKeyAuthenticationMiddleware
-from django_user_api_key.models import UserApiKey
+from django_pat.middleware import PatAuthenticationMiddleware
+from django_pat.models import PersonalAccessToken
 
 User = get_user_model()
 
 
-class TestApiKeyAuthenticationMiddleware(TestCase):
+class TestPatAuthenticationMiddleware(TestCase):
     def setUp(self):
         self.request_factory = RequestFactory()
 
-    def test_it_parses_default_key(self):
+    def test_it_parses_default_header(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
 
         def handle(request):
             self.assertTrue(request.user.is_authenticated)
             self.assertEqual(user, request.user)
 
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {key_val}")
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
         m(req)
 
-    @override_settings(USER_API_KEY_CUSTOM_HEADER="X-Custom-Key")
+    @override_settings(PAT_CUSTOM_HEADER="X-Custom-Key")
     def test_it_supports_a_custom_header(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
 
         def handle(request):
             self.assertEqual(user, request.user)
 
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_X_CUSTOM_KEY=f"Api-Key {key_val}")
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_X_CUSTOM_KEY=f"Access-Token {token_val}")
         m(req)
 
-    @override_settings(USER_API_KEY_CUSTOM_HEADER_PREFIX="Custom-Key")
+    @override_settings(PAT_CUSTOM_HEADER_PREFIX="Custom-Key")
     def test_it_supports_a_custom_prefix(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
 
         def handle(request):
             self.assertEqual(user, request.user)
 
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Custom-Key {key_val}")
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Custom-Key {token_val}")
         m(req)
 
     def test_it_sets_last_used_at(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
         last_used_at = timezone.now() - timedelta(days=1)
-        api_key.last_used_at = last_used_at
-        api_key.save()
+        token.last_used_at = last_used_at
+        token.save()
 
         def handle(request):
-            api_key.refresh_from_db()
-            self.assertEqual(last_used_at, api_key.last_used_at)
+            token.refresh_from_db()
+            self.assertEqual(last_used_at, token.last_used_at)
 
             # Access the request's user to evaluate the lazy object
             self.assertEqual(user, request.user)
 
-            api_key.refresh_from_db()
-            self.assertGreater(api_key.last_used_at, timezone.now() - timedelta(minutes=1))
+            token.refresh_from_db()
+            self.assertGreater(token.last_used_at, timezone.now() - timedelta(minutes=1))
 
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {key_val}")
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
         m(req)
 
-    def test_it_does_not_use_revoked_keys(self):
+    def test_it_does_not_use_revoked_tokens(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
-        api_key, key_val = UserApiKey.objects.create_key(user, "name")
-        api_key.revoked_at = timezone.now()
-        api_key.save()
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
+        token.revoked_at = timezone.now()
+        token.save()
 
         def handle(request):
             self.assertFalse(request.user.is_authenticated)
 
-        m = ApiKeyAuthenticationMiddleware(handle)
-        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Api-Key {key_val}")
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
         m(req)

@@ -1,37 +1,37 @@
-# Django User API Keys
+# Django PAT (Personal Access Tokens)
 
-![Tests](https://github.com/camuthig/django-user-api-key/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/camuthig/django-user-api-key/branch/main/graph/badge.svg?token=GAGIIZXC95)](https://codecov.io/gh/camuthig/django-user-api-key)
+![Tests](https://github.com/camuthig/django-pat/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/camuthig/django-pat/branch/main/graph/badge.svg?token=GAGIIZXC95)](https://codecov.io/gh/camuthig/django-pat)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This application creates API keys/tokens that clients can send via HTTP headers to authenticate as a particular user.
+This application creates personal access tokens that clients can send via HTTP headers to authenticate as a particular user.
 This application expands on the standard functionality provided in REST Framework tokens by allowing users to create
 more than one token and cycle/revoke tokens for security purposes.
 
-API Keys allow clients to pass a secure value to an API without having to first exchange a username and password. This
-makes interactions between machines straightforward and consistent. While these keys are easy to use, it is important
-to ensure they are secure. This application accomplishes this security by:
+Personal access tokens are API keys that allow clients to pass a secure value to an API without having to first exchange
+a username and password. This  makes interactions between machines straightforward and consistent. While these tokens are
+easy to use, it is important to ensure they are secure. This application accomplishes this security by:
 
-1. Hashing all key values after creation. This ensures admins of the application and malicious actors are never be able
-   to access key values in plain text via a data breach.
-2. Allowing for keys to be "cycled". This is accomplished by revoking existing keys and creating new ones. Clients
-   can do this easily via APIs on a regular basis or as needed, if they believe a key has been compromised.
+1. Hashing all token values after creation. This ensures admins of the application and malicious actors are never be able
+   to access token values in plain text via a data breach.
+2. Allowing for tokens to be "cycled". This is accomplished by revoking existing tokens and creating new ones. Clients
+   can do this easily via APIs on a regular basis or as needed, if they believe a token has been compromised.
 
 ## Usage
 
-By default, both the standard middleware and the REST Framework authentication will look for the API key in the
-`Authorization` HTTP header with a prefix of `Api-Key`. So this might look like
+By default, both the standard middleware and the REST Framework authentication will look for the token in the
+`Authorization` HTTP header with a prefix of `Access-Token`. So this might look like
 
 ```
-Authorization: Api-Key 41ecea63-66eb-4e6a-bffd-e85cd29718ab
+Authorization: Access-Token 41ecea63-66eb-4e6a-bffd-e85cd29718ab
 ```
 
 ### Initial Setup
-1. Install the package: `pip install git+https://github.com/camuthig/django-user-api-key.git@master` (not yet available on pypi)
-2. Add `django_user_api_key` to the `INSTALLED_APPS` of your project
-3. Add the `USER_API_KEY_SECRET` value to your settings file to hash secrets. This value should be kept secret!
+1. Install the package: `pip install git+https://github.com/camuthig/django-pat.git@master` (not yet available on pypi)
+2. Add `django_pat` to the `INSTALLED_APPS` of your project
+3. Add the `PAT_SECRET` value to your settings file to hash secrets. This value should be kept secret!
     ```python
-    USER_API_KEY_SECRET = "super-secret-hashing-key"
+    PAT_SECRET = "super-secret-hashing-key"
     ```
 
 
@@ -41,7 +41,7 @@ Authorization: Api-Key 41ecea63-66eb-4e6a-bffd-e85cd29718ab
    ```python
    MIDDLEWARE = [
        "django.contrib.auth.middleware.AuthenticationMiddleware",
-       "django_user_api_key.middleware.ApiKeyAuthenticationMiddleware",
+       "django_pat.middleware.PatAuthenticationMiddleware",
    ]
    ```
 
@@ -51,49 +51,49 @@ Authorization: Api-Key 41ecea63-66eb-4e6a-bffd-e85cd29718ab
    ```python
    REST_FRAMEWORK = {
        "DEFAULT_AUTHENTICATION_CLASSES": [
-           "django_user_api_key.rest_framework.auth.UserApiKeyAuthentication",
+           "django_pat.rest_framework.auth.PatAuthentication",
            "rest_framework.authentication.SessionAuthentication",
        ],
    }
    ```
 
-**Optional: Add API Key Views**
+**Optional: Add Personal Access Token Views**
 
-APIs can be added to your Django application to create, retrieve, and revoke keys out of the box.
+APIs can be added to your Django application to create, retrieve, and revoke tokens out of the box.
 
 ```python
 # urls.py
 from django.urls import include
 from django.urls import path
 
-from django_user_api_key.rest_framework.urls import router as api_key_router
+from django_pat.rest_framework.urls import router as pat_router
 
 urlpatterns = [
     # other routes...
 
-    path("api/", include(api_key_router.urls)),
+    path("api/", include(pat_router.urls)),
 ]
 ```
 
 ## Configuration
 
-Along with the `USER_API_KEY_SECRET` value that is required, you can also configure the header and prefix that the
-middleware and REST Framework authentication use for finding and validating the key.
+Along with the `PAT_SECRET` value that is required, you can also configure the header and prefix that the
+middleware and REST Framework authentication use for finding and validating the token.
 
-* `USER_API_KEY_CUSTOM_HEADER` - Sets the HTTP header to check for the key. This defaults to `Authorization`
-* `USER_API_KEY_CUSTOM_HEADER_PREFIX` - Sets the prefix for the header value. This defaults to `Api-Key`. The middleware
-    and the REST authentication expect a space between the prefix and the key value.
+* `PAT_CUSTOM_HEADER` - Sets the HTTP header to check for the token. This defaults to `Authorization`
+* `PAT_CUSTOM_HEADER_PREFIX` - Sets the prefix for the header value. This defaults to `Access-Token`. The middleware
+    and the REST authentication expect a space between the prefix and the token value.
 
 ## Implementation Details
 
-API values are implemented as UUID4 values. These are sufficiently unique to remain secure and avoid collisions.
+Access token values are implemented as UUID4 values. These are sufficiently unique to remain secure and avoid collisions.
 
 ## Security Concerns
 
-**API Key records should NOT be deleted from the database, even if revoked.** If keys are deleted, there is the
-possibility that the key value could be reassigned to a different user at a later time. If the user originally provided
-the key retains it, they may later use it to inadvertently access the API as the new user. The default behavior of this
-application in the admin is to _revoke_ keys instead of deleting them, and it is recommended users follow this same
+**Personal access token records should NOT be deleted from the database, even if revoked.** If tokens are deleted, there is the
+possibility that the token value could be reassigned to a different user at a later time. If the user originally provided
+the token retains it, they may later use it to inadvertently access the API as the new user. The default behavior of this
+application in the admin is to _revoke_ token instead of deleting them, and it is recommended users follow this same
 pattern.
 
 If a brute force attack is a concern, then rate limiting should be applied to API views. The possibility of brute
