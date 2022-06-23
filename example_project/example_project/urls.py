@@ -19,11 +19,13 @@ from django.urls import include
 from django.urls import path
 
 from django_pat.rest_framework.urls import router
+from example_project.views import SampleApiView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("api/", include("rest_framework.urls")),
     path("api/", include(router.urls)),
+    path("api/sample", SampleApiView.as_view()),
     path("", include("django_pat.urls")),
 ]
