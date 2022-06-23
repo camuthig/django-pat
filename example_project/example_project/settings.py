@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django_pat",
+    "django_pat_dj_permissions",
     "example_project",
 ]
 
@@ -131,6 +132,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 PAT_SECRET = "not-a-secure-key"
+
+PAT_PERMISSIONS_DEFAULT = "pat_permissions"
+
+PAT_PERMISSIONS = {
+    "pat_permissions": {
+        "backend": "django_pat_dj_permissions.permissions.DjangoModelBackend",
+    },
+    "user_permissions": {
+        "backend": "django_pat.permissions.UserBackend",
+    },
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

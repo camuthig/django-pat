@@ -1,5 +1,12 @@
 # Django PAT (Personal Access Tokens)
 
+TODO
+
+* Do some testing
+* Clean up settings stuff
+  * Can it actually work with multiple backends, for example?
+* Create another app django_pat_permissions for simple permissions
+
 ![Tests](https://github.com/camuthig/django-pat/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/camuthig/django-pat/branch/main/graph/badge.svg?token=GAGIIZXC95)](https://codecov.io/gh/camuthig/django-pat)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

@@ -10,6 +10,8 @@ from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 
+from django_pat.permissions import get_backend
+
 
 def _get_secret():
     try:
@@ -74,6 +76,9 @@ class PersonalAccessTokenManager(models.Manager):
         return token, token_val
 
 
+_IS_DJ_PERMISSIONS_INSTALLED = "django_pat_dj_permissions" in settings.INSTALLED_APPS
+
+
 class PersonalAccessToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, editable=False)
     hashed_value = models.CharField(max_length=64, db_index=True, editable=False)
@@ -82,6 +87,12 @@ class PersonalAccessToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     revoked_at = models.DateTimeField(null=True)
     last_used_at = models.DateTimeField(null=True)
+
+    if _IS_DJ_PERMISSIONS_INSTALLED:
+        django_permissions = models.ManyToManyField(
+            "auth.Permission",
+            through="django_pat_dj_permissions.TokenDjangoPermission",
+        )
 
     objects = PersonalAccessTokenManager()
 
@@ -98,5 +109,20 @@ class PersonalAccessToken(models.Model):
         if commit:
             self.save()
 
+    def has_permission(self, permission: str, using: Optional[str] = None) -> bool:
+        """
+        Determine if the token has been given access to the requested permission.
+
+        Args:
+            permission (str): A string representation of a permission.
+            using (str|None): A string referencing a PAT permission backend defined in settings.
+        """
+        backend = get_backend(using)
+
+        return backend.has_permission(self, permission)
+
     def __str__(self):
         return self.name
+
+
+# setattr(PersonalAccessToken, 'django_permissions', models.ManyToManyField('auth.Permission', related_name='+', throug))
