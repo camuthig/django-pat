@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_pat",
+    "django_pat_dj_permissions",
 ]
 
 MIDDLEWARE = [

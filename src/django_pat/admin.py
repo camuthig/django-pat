@@ -34,6 +34,38 @@ class PersonalAccessTokenAdmin(admin.ModelAdmin):
     fields = ["user", "name", "description", "last_used_at", "revoked_at"]
     readonly_fields = ["user", "last_used_at", "revoked_at"]
 
+    def get_inlines(self, request, obj=None):
+        inlines = set(super().get_inlines(request, obj))
+
+        from django.conf import settings
+
+        dj_permissions_installed = "django_pat_dj_permissions" in settings.INSTALLED_APPS
+
+        if dj_permissions_installed:
+            # It would be great if this could be represented as a filter_horizontal, but it doesn't appear to work.
+            # There is a very old ticket where this never was implemented.
+            # See: https://code.djangoproject.com/ticket/8292
+            from django_pat_dj_permissions.models import TokenDjangoPermission
+
+            class DjPermissionsInline(admin.StackedInline):
+                model = TokenDjangoPermission
+
+            inlines.add(DjPermissionsInline)
+
+        return inlines
+
+    #
+    # def get_fields(self, request, obj=None):
+    #     fields = set(super().get_fields(request, obj))
+    #
+    #     from django.conf import settings
+    #     dj_permissions_installed = 'django_pat_dj_permissions' in settings.INSTALLED_APPS
+    #
+    #     if dj_permissions_installed:
+    #         fields.add('django_permissions')
+    #
+    #     return fields
+
     def delete_model(self, request, obj: PersonalAccessToken) -> None:
         obj.revoke()
 
