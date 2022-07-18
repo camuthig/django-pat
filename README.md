@@ -77,12 +77,15 @@ urlpatterns = [
 
 ## Configuration
 
-Along with the `PAT_SECRET` value that is required, you can also configure the header and prefix that the
-middleware and REST Framework authentication use for finding and validating the token.
+Along with the `PAT_SECRET` value that is required, you can also configure certain behaviors of the package in your Django
+application settings.
 
 * `PAT_CUSTOM_HEADER` - Sets the HTTP header to check for the token. This defaults to `Authorization`
 * `PAT_CUSTOM_HEADER_PREFIX` - Sets the prefix for the header value. This defaults to `Access-Token`. The middleware
     and the REST authentication expect a space between the prefix and the token value.
+* `PAT_USES_SHARED_HEADER` - If set to True, then the package will not attempt to validate the prefix on the authorization
+    header. This is most useful when different prefixes are used for different types of authentication, but are all sent
+    using the same HTTP header.
 
 ## Implementation Details
 

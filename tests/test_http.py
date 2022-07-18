@@ -28,6 +28,11 @@ class TestHeaderParsing(SimpleTestCase):
         req = self.request_factory.get("path", HTTP_AUTHORIZATION="Wrong 1234")
         self.assertRaises(ParseException, parse_header, req)
 
+    @override_settings(PAT_USES_SHARED_HEADER=True)
+    def test_it_supports_a_shared_header_with_different_prefixes(self):
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION="Other-Type 1234")
+        self.assertIsNone(parse_header(req))
+
     @override_settings(PAT_CUSTOM_HEADER="X-Custom-Header")
     def test_it_uses_custom_header(self):
         req = self.request_factory.get("path", HTTP_X_CUSTOM_HEADER="Access-Token 1234")
