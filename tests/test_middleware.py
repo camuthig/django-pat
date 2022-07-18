@@ -52,6 +52,18 @@ class TestPatAuthenticationMiddleware(TestCase):
         req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Custom-Key {token_val}")
         m(req)
 
+    @override_settings(PAT_USES_SHARED_HEADER=True)
+    def test_it_supports_a_shared_header(self):
+        user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
+
+        def handle(request):
+            self.assertFalse(hasattr(request, "user"))
+
+        m = PatAuthenticationMiddleware(handle)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Other-Type {token_val}")
+        m(req)
+
     def test_it_sets_last_used_at(self):
         user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
         token, token_val = PersonalAccessToken.objects.create_token(user, "name")

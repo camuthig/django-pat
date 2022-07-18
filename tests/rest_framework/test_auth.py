@@ -53,6 +53,14 @@ class TestPatAuthentication(TestCase):
         self.assertEqual(self.user, found_user)
         self.assertEqual(self.token, found_token)
 
+    @override_settings(PAT_USES_SHARED_HEADER=True)
+    def test_it_supports_a_shared_header(self):
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Custom-Key {self.token_val}")
+        obj = PatAuthentication()
+        res = obj.authenticate(req)
+
+        self.assertIsNone(res)
+
     def test_it_checks_active_users(self):
         self.user.is_active = False
         self.user.save()

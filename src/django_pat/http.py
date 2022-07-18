@@ -7,6 +7,10 @@ class ParseException(Exception):
         self.msg = msg
 
 
+def uses_shared_header() -> bool:
+    return getattr(settings, "PAT_USES_SHARED_HEADER", False)
+
+
 def get_header():
     return getattr(settings, "PAT_CUSTOM_HEADER", "Authorization")
 
@@ -25,8 +29,12 @@ def parse_header(request):
     if not header_val:
         raise ParseException(gettext("Invalid header"))
 
-    if not header_val.startswith(get_keyword() + " "):
-        raise ParseException(gettext("Invalid header"))
+    starts_with_prefix = header_val.startswith(get_keyword() + " ")
+    if not starts_with_prefix and uses_shared_header():
+        return
+
+    if not starts_with_prefix:
+        raise ParseException(gettext("Invalid authentication type"))
 
     _, token_val = header_val.split(get_keyword() + " ")
 

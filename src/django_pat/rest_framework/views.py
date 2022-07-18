@@ -32,7 +32,7 @@ class PersonalAccessTokenViewSet(ModelViewSet):
         return super().get_queryset().filter(user=self.request.user)
 
     def perform_create(self, serializer: CreatePersonalAccessTokenSerializer):  # type: ignore[override]
-        token, plain_text = PersonalAccessToken.objects.create_token(
+        token, plain_text = PersonalAccessToken.objects.create_token(  # type: ignore
             self.request.user,
             serializer.validated_data.get("name"),
             serializer.validated_data.get("description", ""),
@@ -41,7 +41,7 @@ class PersonalAccessTokenViewSet(ModelViewSet):
         # TODO Explore a better way to handle typing here.
         token.plain_text = plain_text  # type: ignore
 
-        serializer.instance = token
+        serializer.instance = token  # type: ignore
 
     def perform_destroy(self, instance: PersonalAccessToken):
         instance.revoke()
