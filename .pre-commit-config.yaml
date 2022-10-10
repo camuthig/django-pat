@@ -16,7 +16,7 @@ repos:
         name: isort (python)
         args: ["--force-single-line-imports", "--profile", "black"]
 -   repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 22.10.0
     hooks:
     -   id: black
         language_version: python3.10
