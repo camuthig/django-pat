@@ -33,7 +33,7 @@ djangorestframework-stubs = "1.5"
 nox = "^2022.1"
 isort = "^5.10"
 coverage = {extras = ["toml"], version = "^6.3.2"}
-pytest-cov = "^3.0.0"
+pytest-cov = "^4.0.0"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
