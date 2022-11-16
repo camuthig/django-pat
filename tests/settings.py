@@ -64,3 +64,11 @@ DATABASES = {
 }
 
 PAT_SECRET = "not_a_secret_key_at_all"
+
+PAT_PERMISSIONS_DEFAULT = "default"
+
+PAT_PERMISSIONS = {
+    "default": {
+        "backend": "tests.rest_framework.test_permissions.MockBackend",
+    },
+}
