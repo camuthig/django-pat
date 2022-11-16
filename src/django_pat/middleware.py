@@ -33,6 +33,9 @@ class PatAuthenticationMiddleware:
         if not token:
             return AnonymousUser()
 
+        if not token.user.is_active:
+            return AnonymousUser()
+
         token.mark_used()
 
         # TODO Explore better typing and if _cached_user is worthwhile

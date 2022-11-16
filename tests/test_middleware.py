@@ -97,3 +97,25 @@ class TestPatAuthenticationMiddleware(TestCase):
         m = PatAuthenticationMiddleware(handle)
         req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
         m(req)
+
+    def test_it_checks_user_active_status(self):
+        user = User.objects.create_user("testuser", "test@test.com", "random-insecure-text")
+        token, token_val = PersonalAccessToken.objects.create_token(user, "name")
+        token.save()
+
+        def handle_active(request):
+            self.assertTrue(request.user.is_authenticated)
+
+        m = PatAuthenticationMiddleware(handle_active)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
+        m(req)
+
+        user.is_active = False
+        user.save()
+
+        def handle_inactive(request):
+            self.assertFalse(request.user.is_authenticated)
+
+        m = PatAuthenticationMiddleware(handle_inactive)
+        req = self.request_factory.get("path", HTTP_AUTHORIZATION=f"Access-Token {token_val}")
+        m(req)
