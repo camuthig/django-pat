@@ -63,6 +63,8 @@ DATABASES = {
     },
 }
 
+USE_TZ = True
+
 PAT_SECRET = "not_a_secret_key_at_all"
 
 PAT_PERMISSIONS_DEFAULT = "default"

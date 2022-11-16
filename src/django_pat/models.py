@@ -100,17 +100,17 @@ class PersonalAccessToken(models.Model):
         if commit:
             self.save()
 
-    def has_permission(self, permission: str, using: Optional[str] = None) -> bool:
+    def has_any_permission(self, *permissions: str, using: Optional[str] = None) -> bool:
         """
-        Determine if the token has been given access to the requested permission.
+        Determine if the token has been given access to any of the provided permissions.
 
         Args:
-            permission (str): A string representation of a permission.
+            permissions (tuple[str]): A tuple of permission strings.
             using (str|None): A string referencing a PAT permission backend defined in settings.
         """
         backend = get_backend(using)
 
-        return backend.has_permission(self, permission)
+        return backend.has_any_permission(self, *permissions)
 
     def __str__(self):
         return self.name

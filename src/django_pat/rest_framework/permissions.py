@@ -16,7 +16,7 @@ class BasePatPermission(BasePermission):
         if not isinstance(request.auth, PersonalAccessToken):
             return False
 
-        return request.auth.has_permission(self.permission, self.using)
+        return request.auth.has_any_permission(self.permission, self.using)
 
 
 def PatPermission(permission: str, using: str = None) -> Type[BasePatPermission]:  # noqa fmt: skip

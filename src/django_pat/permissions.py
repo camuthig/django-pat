@@ -6,16 +6,23 @@ from django.utils.module_loading import import_string
 
 
 class Backend:
-    def has_permission(self, token, permission: str) -> bool:
+    def has_any_permission(self, token, *permissions: str) -> bool:
+        """
+        Determine if the given token has permission for any of the provided actions.
+        """
         raise NotImplementedError()
 
 
 class UserBackend(Backend):
-    def has_permission(self, token, permission: str) -> bool:
+    def has_any_permission(self, token, *permissions: str) -> bool:
         """
-        Determine if the given token has been provided access to do the requested action.
+        Determine if the given token has permission for any of the provided actions.
         """
-        return token.user.has_perm(permission)
+        for p in permissions:
+            if token.user.has_perm(p):
+                return True
+
+        return False
 
 
 class ConfigurationError(ValueError):
@@ -31,13 +38,15 @@ class BackendManager:
     _backends: Optional[Dict[str, Backend]]
 
     def __new__(cls, *args, **kwargs):
-        # WIP implements singleton pattern, but I should verify it works the way I want.
         if cls.instance is not None:
             return cls.instance
         else:
             inst = cls.instance = super().__new__(cls, *args, **kwargs)
             inst._backends = None
             return inst
+
+    def boot(self):
+        self.get_backends()
 
     def clear_cache(self):
         self._backends = None
@@ -73,7 +82,6 @@ def manager() -> BackendManager:
 
 
 def get_backend(name: str = None) -> Backend:
-    # WIP I'd love to instead be able to call `manager` as a property, but still have it be lazy...
     return manager().get_backend(name)
 
 

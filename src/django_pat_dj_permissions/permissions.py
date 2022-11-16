@@ -18,5 +18,5 @@ class DjangoModelBackend(Backend):
 
         return getattr(token, perm_cache_name)
 
-    def has_permission(self, token, permission: str):
-        return permission in self._get_permissions(token)
+    def has_any_permission(self, token, *permissions: str):
+        return bool(set(permissions).intersection(self._get_permissions(token)))
