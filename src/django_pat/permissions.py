@@ -28,6 +28,7 @@ def load_backend(path):
 
 class BackendManager:
     instance = None
+    _backends: Optional[Dict[str, Backend]]
 
     def __new__(cls, *args, **kwargs):
         # WIP implements singleton pattern, but I should verify it works the way I want.
@@ -35,10 +36,8 @@ class BackendManager:
             return cls.instance
         else:
             inst = cls.instance = super().__new__(cls, *args, **kwargs)
+            inst._backends = None
             return inst
-
-    def __init__(self):
-        self._backends: Optional[Dict[str, Backend]] = None
 
     def clear_cache(self):
         self._backends = None
@@ -51,7 +50,7 @@ class BackendManager:
 
         # WIP Handle poorly defined dicts
 
-        for k, d in settings.PAT_PERMISSIONS.items():
+        for k, d in settings.PAT_PERMISSIONS.items():  # type: ignore
             backends[k] = load_backend(d["backend"])
 
         self._backends = backends
@@ -59,7 +58,7 @@ class BackendManager:
 
     def get_backend(self, name: str = None) -> Backend:
         if name is None:
-            name = settings.PAT_PERMISSIONS_DEFAULT
+            name = settings.PAT_PERMISSIONS_DEFAULT  # type: ignore
 
         b = self.get_backends().get(name)
 

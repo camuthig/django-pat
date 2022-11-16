@@ -10,6 +10,7 @@ from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 
+from django_pat import tokens
 from django_pat.permissions import get_backend
 
 
@@ -65,8 +66,7 @@ class PersonalAccessTokenManager(models.Manager):
         description: Optional[str] = None,
         commit: bool = True,
     ) -> Tuple["PersonalAccessToken", uuid.UUID]:
-        token_val = uuid.uuid4()
-        hashed_val = _hash_value(token_val)
+        hashed_val, token_val = tokens.generate()
 
         token = PersonalAccessToken(user=user, hashed_value=hashed_val, name=name, description=description or "")
 
@@ -74,9 +74,6 @@ class PersonalAccessTokenManager(models.Manager):
             token.save()
 
         return token, token_val
-
-
-_IS_DJ_PERMISSIONS_INSTALLED = "django_pat_dj_permissions" in settings.INSTALLED_APPS
 
 
 class PersonalAccessToken(models.Model):
@@ -87,12 +84,6 @@ class PersonalAccessToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     revoked_at = models.DateTimeField(null=True)
     last_used_at = models.DateTimeField(null=True)
-
-    if _IS_DJ_PERMISSIONS_INSTALLED:
-        django_permissions = models.ManyToManyField(
-            "auth.Permission",
-            through="django_pat_dj_permissions.TokenDjangoPermission",
-        )
 
     objects = PersonalAccessTokenManager()
 
@@ -123,6 +114,3 @@ class PersonalAccessToken(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# setattr(PersonalAccessToken, 'django_permissions', models.ManyToManyField('auth.Permission', related_name='+', throug))

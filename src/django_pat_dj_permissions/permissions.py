@@ -10,7 +10,7 @@ class DjangoModelBackend(Backend):
         perm_cache_name = "_perm_cache"
         if not hasattr(token, "_perm_cache"):
             if token.user.is_superuser:
-                perms = Permission.objects.all()
+                perms: QuerySet = Permission.objects.all()
             else:
                 perms = token.django_permissions.all()
             perms = perms.values_list("permission__content_type__app_label", "permission__codename").order_by()
