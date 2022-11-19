@@ -7,13 +7,13 @@ from django_pat.permissions import Backend
 class DjangoModelBackend(Backend):
     def _get_permissions(self, token) -> QuerySet["Permission"]:
         # Unashamedly based on the logic used by the Django ModelBackend
-        perm_cache_name = "_perm_cache"
-        if not hasattr(token, "_perm_cache"):
+        perm_cache_name = "_dj_pat_perm_cache"
+        if not hasattr(token, perm_cache_name):
             if token.user.is_superuser:
                 perms: QuerySet = Permission.objects.all()
             else:
                 perms = token.django_permissions.all()
-            perms = perms.values_list("permission__content_type__app_label", "permission__codename").order_by()
+            perms = perms.values_list("content_type__app_label", "codename").order_by()
             setattr(token, perm_cache_name, {"%s.%s" % (ct, name) for ct, name in perms})
 
         return getattr(token, perm_cache_name)
