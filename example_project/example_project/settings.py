@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_pat",
     "django_pat_permissions",
+    "django_pat_dj_permissions",
     "example_project",
 ]
 
@@ -138,6 +139,9 @@ PAT_PERMISSIONS_DEFAULT = "pat_permissions"
 PAT_PERMISSIONS = {
     "pat_permissions": {
         "backend": "django_pat_permissions.permissions.PatPermissionBackend",
+    },
+    "dj_permissions": {
+        "backend": "django_pat_dj_permissions.permissions.DjangoModelBackend",
     },
     "user_permissions": {
         "backend": "django_pat.permissions.UserBackend",
