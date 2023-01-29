@@ -33,7 +33,7 @@ django-stubs = "^1.10"
 djangorestframework-stubs = "1.7.0"
 nox = "^2022.1"
 isort = "^5.10"
-coverage = {extras = ["toml"], version = "^6.3.2"}
+coverage = {extras = ["toml"], version = "^7.0.5"}
 pytest-cov = "^4.0.0"
 
 [tool.pytest.ini_options]
