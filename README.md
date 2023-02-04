@@ -127,4 +127,3 @@ forcing all possible UUID4 values is unlikely, but rate limiting provides anothe
     want to use this key in a URL, as it would go over the network in plain-text.
   * Each user can only have a single token.
   * Revoking one user's token opens up the possibility of generating the same token again for a different user.
-* Django OAuth Toolkit - WIP
