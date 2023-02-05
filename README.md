@@ -3,6 +3,8 @@
 ![Tests](https://github.com/camuthig/django-pat/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/camuthig/django-pat/branch/main/graph/badge.svg?token=GAGIIZXC95)](https://codecov.io/gh/camuthig/django-pat)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Python Versions](https://img.shields.io/pypi/pyversions/django-pat)
+![Django Versions](https://img.shields.io/pypi/djversions/django-pat?label=django)
 
 This application creates personal access tokens that clients can send via HTTP headers to authenticate as a particular user.
 This application expands on the standard functionality provided in REST Framework tokens by allowing users to create
