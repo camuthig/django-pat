@@ -11,13 +11,9 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
-        django-version: [ "3.2", "4.0" ]
-        exclude:
-          - django-version: "3.7"
-            python-version: "4.0"
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
     runs-on: ${{ matrix.os }}
-    name: test-py${{ matrix.python-version }}-dj${{ matrix.django-version }}-${{ matrix.os }}
+    name: test-py${{ matrix.python-version }}-${{ matrix.os }}
     steps:
      - uses: actions/checkout@v3
      - uses: actions/setup-python@v3
@@ -30,14 +26,14 @@ jobs:
      - uses: actions/cache@v3
        with:
          path: .nox
-         key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.django-version }}-nox-${{ hashFiles('**/pyproject.toml') }}
+         key: ${{ matrix.os }}-${{ matrix.python-version }}-nox-${{ hashFiles('**/pyproject.toml') }}
          restore-keys: |
-           ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.django-version }}-nox-
+           ${{ matrix.os }}-${{ matrix.python-version }}-nox-
      - name: Run tests
        run: nox -s tests --python ${{ matrix.python-version }} --reuse-existing-virtualenvs
      - uses: codecov/codecov-action@v2
        with:
-         name: test-py${{ matrix.python-version }}-${{ matrix.os }}-${{ matrix.django-version }}
+         name: test-py${{ matrix.python-version }}-${{ matrix.os }}
   lint:
     strategy:
       matrix:
