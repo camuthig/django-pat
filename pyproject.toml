@@ -8,6 +8,11 @@ license = "MIT"
 packages = [
     { include = "django_pat", from = "src" },
 ]
+classifiers = [
+    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+]
 
 [tool.poetry.dependencies]
 python = ">= 3.7, < 3.12"
