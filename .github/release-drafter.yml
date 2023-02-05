@@ -15,6 +15,7 @@ categories:
   - title: 'Maintenance'
     labels:
       - 'chore'
+      - 'dependencies'
 template: |
   ## Changes
 
