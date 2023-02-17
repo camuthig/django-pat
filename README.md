@@ -63,7 +63,7 @@ Authorization: Access-Token 41ecea63-66eb-4e6a-bffd-e85cd29718ab
 
 **Optional: Add Personal Access Token Views**
 
-APIs can be added to your Django application to create, retrieve, and revoke tokens out of the box.
+APIs can be added to your Django application to create, retrieve, and revoke tokens out of the box. This will create new Django Rest Routes at `/personalAccessTokens`
 
 ```python
 # urls.py
@@ -78,6 +78,8 @@ urlpatterns = [
     path("api/", include(pat_router.urls)),
 ]
 ```
+
+Alternatively, the `PersonalAccessTokenViewSet` can be added to any route you prefer.
 
 ## Configuration
 
