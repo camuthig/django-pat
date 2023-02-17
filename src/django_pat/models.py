@@ -60,7 +60,7 @@ class PersonalAccessTokenManager(models.Manager):
         self,
         user,
         name: str,
-        description: str = None,
+        description: str | None = None,
         commit: bool = True,
     ) -> Tuple["PersonalAccessToken", uuid.UUID]:
         token_val = uuid.uuid4()
