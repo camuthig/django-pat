@@ -31,7 +31,7 @@ Authorization: Access-Token 41ecea63-66eb-4e6a-bffd-e85cd29718ab
 ```
 
 ### Initial Setup
-1. Install the package: `pip install git+https://github.com/camuthig/django-pat.git@master` (not yet available on pypi)
+1. Install the package: `pip install django-pat`
 2. Add `django_pat` to the `INSTALLED_APPS` of your project
 3. Add the `PAT_SECRET` value to your settings file to hash secrets. This value should be kept secret!
     ```python
