@@ -35,7 +35,7 @@ flake8 = "^5.0"
 black = "^23.1"
 mypy = "^1.0"
 django-stubs = "^1.10"
-djangorestframework-stubs = "1.7.0"
+djangorestframework-stubs = "1.9.1"
 nox = "^2022.1"
 isort = "^5.10"
 coverage = {extras = ["toml"], version = "^7.0.5"}
