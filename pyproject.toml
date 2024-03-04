@@ -36,7 +36,7 @@ black = "^23.1"
 mypy = "^1.0"
 django-stubs = "^4.2"
 djangorestframework-stubs = "^3.14.0"
-nox = "^2023.4"
+nox = "^2024.3"
 isort = "^5.10"
 coverage = {extras = ["toml"], version = "^7.0.5"}
 pytest-cov = "^4.0.0"
