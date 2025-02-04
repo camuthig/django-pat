@@ -20,11 +20,9 @@ jobs:
        with:
          python-version: ${{ matrix.python-version }}
      - run: pip install nox
-     - run: pip install setuptools
-       if: matrix.python-version == '3.12'
-     - uses: abatilo/actions-poetry@v2.0.0
+     - uses: abatilo/actions-poetry@v4.0.0
        with:
-         poetry-version: 1.1.13
+         poetry-version: 1.8.5
      - uses: actions/cache@v3
        with:
          path: .nox
@@ -49,9 +47,9 @@ jobs:
           python-version: 3.8
           architecture: x64
       - run: pip install nox
-      - uses: abatilo/actions-poetry@v2.0.0
+      - uses: abatilo/actions-poetry@v5.0.0
         with:
-          poetry-version: 1.1.13
+          poetry-version: 1.8.5
       - uses: actions/cache@v3
         with:
           path: .nox
