@@ -8,7 +8,8 @@ import nox
         (python, django)
         for python in ("3.8", "3.9", "3.10", "3.11", "3.12")
         for django in ("3.2", "4.0", "4.1", "4.2", "5.0", "5.1")
-        if (python, django) not in [
+        if (python, django)
+        not in [
             ("3.11", "3.2"),
             ("3.12", "3.2"),
             ("3.12", "4.0"),
