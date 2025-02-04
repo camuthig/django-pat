@@ -13,13 +13,16 @@ classifiers = [
     "Framework :: Django :: 4.0",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
 ]
 
 [tool.poetry.dependencies]
-python = ">= 3.7, < 3.12"
+python = ">= 3.8, < 3.13"
+
 django = [
-    {version = "~3.2", python = "3.7"},
-    {version = ">= 3.2, < 5.0", python = ">= 3.8"},
+    { version = ">=3.2, <4.2", python = ">=3.8, <3.12" },
+    { version = ">=4.2, <5.2", python = ">=3.12, <3.13" },
 ]
 
 djangorestframework = { version = "^3.11", optional = true }
