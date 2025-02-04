@@ -11,18 +11,18 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12" ]
     runs-on: ${{ matrix.os }}
     name: test-py${{ matrix.python-version }}-${{ matrix.os }}
     steps:
      - uses: actions/checkout@v3
-     - uses: actions/setup-python@v3
+     - uses: actions/setup-python@v5
        with:
          python-version: ${{ matrix.python-version }}
      - run: pip install nox
-     - uses: abatilo/actions-poetry@v2.0.0
+     - uses: abatilo/actions-poetry@v4.0.0
        with:
-         poetry-version: 1.1.13
+         poetry-version: 1.8.5
      - uses: actions/cache@v3
        with:
          path: .nox
@@ -42,14 +42,14 @@ jobs:
     name: Lint
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.7
+          python-version: 3.8
           architecture: x64
       - run: pip install nox
-      - uses: abatilo/actions-poetry@v2.0.0
+      - uses: abatilo/actions-poetry@v4.0.0
         with:
-          poetry-version: 1.1.13
+          poetry-version: 1.8.5
       - uses: actions/cache@v3
         with:
           path: .nox
