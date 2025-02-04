@@ -44,6 +44,9 @@ nox = "^2024.4"
 isort = "^5.10"
 coverage = {extras = ["toml"], version = "^7.0.5"}
 pytest-cov = "^4.0.0"
+setuptools = [
+    { version = "^75.8", python = ">= 3.12" },
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
