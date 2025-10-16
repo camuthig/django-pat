@@ -25,6 +25,11 @@ import nox
 def tests(session, django):
     session.run("poetry", "install", external=True)
     session.install(f"django=={django}")
+
+    if django == "4.0":
+        # Note: Test fail on Django 4.0 if using DRF 3.15.2 or higher, so we have to force the version.
+        session.install("djangorestframework==3.15.1")
+
     session.run("pytest", "--cov", "--cov-report=xml")
 
 
