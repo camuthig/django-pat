@@ -9,7 +9,6 @@ packages = [
     { include = "django_pat", from = "src" },
 ]
 classifiers = [
-    "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.0",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
@@ -22,9 +21,11 @@ classifiers = [
 python = ">= 3.8, < 3.13"
 
 django = [
-    { version = ">=3.2, <4.1", python = ">=3.8, <3.11" },   # Py 3.8–3.10 => Django 3.2–4.0
-    { version = ">=4.1, <4.3", python = ">=3.11, <3.12" },  # Py 3.11     => Django 4.1–4.2
-    { version = ">=4.2, <6.0", python = ">=3.12, <3.13" },  # Py 3.12     => Django 4.2–5.2
+  { version = ">=4.0, <4.3", python = ">=3.8, <3.10" },   # Py 3.8–3.9  => 4.0–4.2
+  { version = ">=4.0, <6.0", python = ">=3.10, <3.11" },  # Py 3.10     => 4.0–5.2
+  { version = ">=4.1, <6.0", python = ">=3.11, <3.12" },  # Py 3.11     => 4.1–5.2
+  { version = ">=4.2, <6.0", python = ">=3.12, <3.13" },  # Py 3.12     => 4.2–5.2
+  { version = ">=5.1, <6.0", python = ">=3.13, <3.14" },  # Py 3.13     => 5.1–5.2
 ]
 
 djangorestframework = { version = "^3.11", optional = true }
