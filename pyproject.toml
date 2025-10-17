@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django_pat"
-version = "1.1.0"
+version = "2.0.0"
 description = "A Django package for creating, using, and managing personal access tokens."
 readme = "README.md"
 authors = ["Chris Muthig <camuthig@gmail.com>"]
