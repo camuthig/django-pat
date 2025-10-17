@@ -7,11 +7,9 @@ import nox
     [
         (python, django)
         for python in ("3.8", "3.9", "3.10", "3.11", "3.12")
-        for django in ("3.2", "4.0", "4.1", "4.2", "5.0", "5.1", "5.2")
+        for django in ("4.0", "4.1", "4.2", "5.0", "5.1", "5.2")
         if (python, django)
         not in [
-            ("3.11", "3.2"),
-            ("3.12", "3.2"),
             ("3.11", "4.0"),
             ("3.12", "4.0"),
             ("3.12", "4.1"),
@@ -27,6 +25,11 @@ import nox
 def tests(session, django):
     session.run("poetry", "install", external=True)
     session.install(f"django=={django}")
+
+    if django == "4.0":
+        # Note: Test fail on Django 4.0 if using DRF 3.15.2 or higher, so we have to force the version.
+        session.install("djangorestframework==3.15.1")
+
     session.run("pytest", "--cov", "--cov-report=xml")
 
 
